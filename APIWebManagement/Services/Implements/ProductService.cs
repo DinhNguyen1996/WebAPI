@@ -18,20 +18,10 @@ namespace APIWebManagement.Services.Implements
             _dataContext = dataContext;
         }
 
-        public async Task<PagedResults<ProductViewModel>> GetAllProduct(GetProductsPagingRequest request)
+        public async Task<PagedResults<Product>> GetAllProduct(GetProductsPagingRequest request)
         {
             var query = from pro in _dataContext.Products
-                        select new ProductViewModel
-                        {
-                            ProductID = pro.ProductID,
-                            Code = pro.Code,
-                            Name = pro.Name,
-                            SalePrice = pro.SalePrice,
-                            OriginalPrice = pro.OriginalPrice,
-                            CreatedDate = pro.CreatedDate,
-                            UpdatedDate = pro.UpdatedDate,
-                            CategoryID = pro.CategoryID
-                        };
+                        select pro;
 
             if (!string.IsNullOrEmpty(request.Keyword))
             {
@@ -39,9 +29,9 @@ namespace APIWebManagement.Services.Implements
             }
             int totalRows = await query.CountAsync();
             var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize).ToListAsync();
+                .Take(request.PageSize).Include(x => x.Category).ToListAsync();
 
-            var pagedResult = new PagedResults<ProductViewModel>()
+            var pagedResult = new PagedResults<Product>()
             {
                 TotalRecords = totalRows,
                 PageSize = request.PageSize,
