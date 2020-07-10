@@ -89,9 +89,6 @@ namespace APIWebManagement.Services.Implements
 
         public async Task<int> UpdateProduct(ProductUpdateRequest productUpdateRequest)
         {
-            if (productUpdateRequest.CategoryID == 0)
-                throw new WebManagementException("Can not find ID Product");
-
             var productUpdate = await _dataContext.Products.FirstOrDefaultAsync(x => x.ProductID == productUpdateRequest.ProductID);
             if (productUpdate == null)
                 throw new WebManagementException("Can not find product to update");

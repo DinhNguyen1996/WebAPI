@@ -72,11 +72,7 @@ namespace APIWebManagement.Services.Implements
 
         public async Task<int> UpdateCategory(CategoryUpdateRequest categoryUpdateRequest)
         {
-            if (categoryUpdateRequest.CategoryID == 0)
-                throw new WebManagementException("Can not find ID Category");
-
             var categoryUpdate = await _dataContext.Categories.FirstOrDefaultAsync(x => x.CategoryID == categoryUpdateRequest.CategoryID);
-
             if (categoryUpdate == null)
                 throw new WebManagementException("Can not find category to update");
 

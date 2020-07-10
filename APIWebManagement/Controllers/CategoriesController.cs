@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIWebManagement.Data.Entities;
 using APIWebManagement.Services.Interfaces;
+using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Category;
 using Microsoft.AspNetCore.Mvc;
 
@@ -61,7 +62,7 @@ namespace APIWebManagement.Controllers
             if (result == 0)
                 return BadRequest();
 
-            return Ok(new { Message = "Updated Category successfully" });
+            return Ok(new MessageResponse("Updated Category successfully"));
         }
 
         // DELETE api/<ProductsController>/5
@@ -72,7 +73,7 @@ namespace APIWebManagement.Controllers
             if (result == 0)
                 return BadRequest();
 
-            return Ok(new { Message = "Deleted Category successfully" });
+            return Ok(new MessageResponse("Deleted Category successfully"));
         }
     }
 }

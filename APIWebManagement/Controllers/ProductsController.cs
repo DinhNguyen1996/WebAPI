@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Xml.Schema;
 using APIWebManagement.Data.Entities;
 using APIWebManagement.Services.Interfaces;
+using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,7 +63,7 @@ namespace APIWebManagement.Controllers
             if (result == 0)
                 return BadRequest();
 
-            return Ok(new { Message = "Updated Product successfully" });
+            return Ok(new MessageResponse("Updated Product successfully"));
         }
 
         // DELETE api/<ProductsController>/5
@@ -73,7 +74,7 @@ namespace APIWebManagement.Controllers
             if (result == 0)
                 return BadRequest();
 
-            return Ok(new { Message = "Deleted Product successfully" });
+            return Ok(new MessageResponse("Deleted Product successfully"));
         }
     }
 }
