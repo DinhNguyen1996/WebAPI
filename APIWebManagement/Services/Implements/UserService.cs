@@ -24,6 +24,9 @@ namespace APIWebManagement.Services.Implements
             if (userCreateRequest == null)
                 throw new WebManagementException("Can not create User");
 
+            var isUserExist = await _dataContext.Users.AnyAsync(x => x.UserName == userCreateRequest.UserName);
+            if(isUserExist) throw new WebManagementException("Username is exist in database");
+
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(userCreateRequest.Password, out passwordHash, out passwordSalt);
 
@@ -130,6 +133,14 @@ namespace APIWebManagement.Services.Implements
             _dataContext.Users.Remove(user);
 
             return await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> UserExist(string username)
+        {
+            if (await _dataContext.Users.AnyAsync(x => x.UserName == username))
+                return true;
+
+            return false;
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
