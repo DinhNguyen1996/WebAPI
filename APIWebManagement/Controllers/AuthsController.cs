@@ -1,4 +1,5 @@
 ﻿using APIWebManagement.Services.Interfaces;
+using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Login;
 using APIWebManagement.ViewModels.User;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,7 @@ namespace APIWebManagement.Controllers
             var user = await _authService.Login(request.UserName.ToLower(), request.Password);
 
             if (user == null)
-                return Unauthorized();
+                return Unauthorized(new MessageResponse("Can not find User"));
 
             var claims = new[]
             {

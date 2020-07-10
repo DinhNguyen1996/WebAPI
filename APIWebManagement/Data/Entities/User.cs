@@ -9,7 +9,9 @@ namespace APIWebManagement.Data.Entities
         public int UserID { get; set; }
         [Required]
         public string UserName { get; set; }
+        [Required]
         public byte[] PasswordHash { get; set; }
+        [Required]
         public byte[] PasswordSalt { get; set; }
         public string Gender { get; set; }
         public bool IsActive { get; set; }
