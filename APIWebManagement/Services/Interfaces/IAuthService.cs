@@ -1,13 +1,11 @@
-﻿using APIWebManagement.Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using APIWebManagement.ViewModels.Login;
+using APIWebManagement.ViewModels.User;
 using System.Threading.Tasks;
 
 namespace APIWebManagement.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<User> Login(string username, string password);
+        Task<UserResponseLogin> Login(UserForLoginRequest request);
     }
 }

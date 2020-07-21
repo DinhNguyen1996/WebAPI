@@ -16,4 +16,10 @@ namespace APIWebManagement.ViewModels.User
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
     }
+
+    public class UserResponseLogin
+    {
+        public string Token { get; set; }
+        public UserViewModel User { get; set; }
+    }
 }

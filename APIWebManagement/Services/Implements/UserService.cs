@@ -3,6 +3,7 @@ using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Models;
 using APIWebManagement.ViewModels.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,11 @@ namespace APIWebManagement.Services.Implements
     public class UserService : IUserService
     {
         private readonly DataContext _dataContext;
-        public UserService(DataContext dataContext)
+        private readonly UserManager<User> _userManager;
+        public UserService(DataContext dataContext, UserManager<User> userManager)
         {
             _dataContext = dataContext;
+            _userManager = userManager;
         }
 
         public async Task<int> CreateUser(UserCreateRequest userCreateRequest)
@@ -25,26 +28,25 @@ namespace APIWebManagement.Services.Implements
                 throw new WebManagementException("Can not create User");
 
             var isUserExist = await _dataContext.Users.AnyAsync(x => x.UserName == userCreateRequest.UserName);
-            if(isUserExist) throw new WebManagementException("Username is exist in database");
-
-            byte[] passwordHash, passwordSalt;
-            CreatePasswordHash(userCreateRequest.Password, out passwordHash, out passwordSalt);
+            if (isUserExist) throw new WebManagementException("Username is exist in database");
 
             var newUser = new User
             {
                 UserName = userCreateRequest.UserName,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
+                PasswordHash = userCreateRequest.Password,
                 Gender = userCreateRequest.Gender,
                 IsActive = true,
                 DateOfBirth = userCreateRequest.DateOfBirth,
                 CreatedDate = DateTime.Now
             };
 
-            await _dataContext.Users.AddAsync(newUser);
-            await _dataContext.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(newUser, userCreateRequest.Password);
+            if (result.Succeeded)
+            {
+                return newUser.Id;
+            }
 
-            return newUser.UserID;
+            return 0;
         }
 
         public async Task<PagedResults<UserViewModel>> GetAllUser(GetUsersPagingRequest request)
@@ -67,7 +69,7 @@ namespace APIWebManagement.Services.Implements
                 {
                     var userView = new UserViewModel
                     {
-                        UserID = item.UserID,
+                        UserID = item.Id,
                         UserName = item.UserName,
                         Gender = item.Gender,
                         IsActive = item.IsActive,
@@ -98,7 +100,7 @@ namespace APIWebManagement.Services.Implements
 
             var userView = new UserViewModel
             {
-                UserID = user.UserID,
+                UserID = user.Id,
                 UserName = user.UserName,
                 Gender = user.Gender,
                 IsActive = user.IsActive,
@@ -111,7 +113,7 @@ namespace APIWebManagement.Services.Implements
 
         public async Task<int> UpdateUser(UserUpdateRequest userUpdateRequest)
         {
-            var userUpdate = await _dataContext.Users.FirstOrDefaultAsync(x => x.UserID == userUpdateRequest.UserID);
+            var userUpdate = await _dataContext.Users.FirstOrDefaultAsync(x => x.Id == userUpdateRequest.UserID);
             if (userUpdate == null)
                 throw new WebManagementException("Can not find User");
 
