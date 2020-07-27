@@ -16,10 +16,13 @@ namespace APIWebManagement.Services.Implements
     {
         private readonly DataContext _dataContext;
         private readonly UserManager<User> _userManager;
-        public UserService(DataContext dataContext, UserManager<User> userManager)
+        private readonly IRoleService _roleService;
+        public UserService(DataContext dataContext, UserManager<User> userManager, IRoleService roleService)
         {
             _dataContext = dataContext;
             _userManager = userManager;
+            _roleService = roleService;
+
         }
 
         public async Task<int> CreateUser(UserCreateRequest userCreateRequest)
@@ -41,6 +44,12 @@ namespace APIWebManagement.Services.Implements
             };
 
             var result = await _userManager.CreateAsync(newUser, userCreateRequest.Password);
+            if (!string.IsNullOrEmpty(userCreateRequest.RoleName))
+            {
+                //var checkRole = _roleManager.RoleExistsAsync(roleName);
+                await _userManager.AddToRoleAsync(newUser, userCreateRequest.RoleName);
+            }
+
             if (result.Succeeded)
             {
                 return newUser.Id;
@@ -51,8 +60,17 @@ namespace APIWebManagement.Services.Implements
 
         public async Task<PagedResults<UserViewModel>> GetAllUser(GetUsersPagingRequest request)
         {
-            var query = from user in _dataContext.Users
-                        select user;
+            var query = from u in _dataContext.Users
+                        select new UserViewModel
+                        {
+                            UserID = u.Id,
+                            UserName = u.UserName,
+                            Gender = u.Gender,
+                            IsActive = u.IsActive,
+                            DateOfBirth = u.DateOfBirth,
+                            CreatedDate = u.CreatedDate,
+                            UpdatedDate = u.UpdatedDate,
+                        };
 
             if (!string.IsNullOrEmpty(request.Keyword))
             {
@@ -62,31 +80,12 @@ namespace APIWebManagement.Services.Implements
             var dataUsers = await query.Skip((request.PageIndex - 1) * request.PageSize)
                 .Take(request.PageSize).ToListAsync();
 
-            var lstUsers = new List<UserViewModel>();
-            if (dataUsers.Count > 0)
-            {
-                foreach (var item in dataUsers)
-                {
-                    var userView = new UserViewModel
-                    {
-                        UserID = item.Id,
-                        UserName = item.UserName,
-                        Gender = item.Gender,
-                        IsActive = item.IsActive,
-                        DateOfBirth = item.DateOfBirth,
-                        CreatedDate = item.CreatedDate,
-                        UpdatedDate = item.UpdatedDate
-                    };
-                    lstUsers.Add(userView);
-                }
-            }
-
             var pagedResult = new PagedResults<UserViewModel>()
             {
                 TotalRecords = totalRows,
                 PageSize = request.PageSize,
                 PageIndex = request.PageIndex,
-                Data = lstUsers
+                Data = dataUsers
             };
 
             return pagedResult;
@@ -113,7 +112,7 @@ namespace APIWebManagement.Services.Implements
 
         public async Task<int> UpdateUser(UserUpdateRequest userUpdateRequest)
         {
-            var userUpdate = await _dataContext.Users.FirstOrDefaultAsync(x => x.Id == userUpdateRequest.UserID);
+            var userUpdate = await _userManager.FindByIdAsync(userUpdateRequest.UserID.ToString());
             if (userUpdate == null)
                 throw new WebManagementException("Can not find User");
 
@@ -122,6 +121,8 @@ namespace APIWebManagement.Services.Implements
             userUpdate.IsActive = userUpdateRequest.IsActive;
             userUpdate.DateOfBirth = userUpdateRequest.DateOfBirth;
             userUpdate.UpdatedDate = DateTime.Now;
+
+
 
             return await _dataContext.SaveChangesAsync();
         }
@@ -145,6 +146,48 @@ namespace APIWebManagement.Services.Implements
             return false;
         }
 
+        public async Task<List<UserWithRoles>> GetUserWithRoles()
+        {
+            var userRoles = await (from u in _dataContext.Users
+                                   select new UserWithRoles
+                                   {
+                                       UserID = u.Id,
+                                       UserName = u.UserName,
+                                       Roles = (from userRole in u.UserRoles
+                                                join role in _dataContext.Roles on userRole.RoleId equals role.Id
+                                                select role.Name).ToList()
+                                   }).ToListAsync();
+
+            return userRoles;
+        }
+
+        public async Task<List<string>> EditRoleUser(string userName, UserEditRoleRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+                throw new WebManagementException("Can not find User");
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var selectedRoles = request.RoleNames;
+
+            selectedRoles = selectedRoles ?? new string[] { };
+
+            var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
+
+            if (!result.Succeeded)
+                throw new WebManagementException(result.Errors.ToString());
+
+            result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
+
+            if (!result.Succeeded)
+                throw new WebManagementException(result.Errors.ToString());
+
+            var lstRoles = new List<string>(await _userManager.GetRolesAsync(user));
+
+            return lstRoles;
+        }
+
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
@@ -153,5 +196,7 @@ namespace APIWebManagement.Services.Implements
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
+
+
     }
 }
