@@ -38,6 +38,7 @@ namespace APIWebManagement.Services.Implements
                 UserName = userCreateRequest.UserName,
                 PasswordHash = userCreateRequest.Password,
                 Gender = userCreateRequest.Gender,
+                Email = userCreateRequest.Email,
                 IsActive = true,
                 DateOfBirth = userCreateRequest.DateOfBirth,
                 CreatedDate = DateTime.Now
@@ -67,6 +68,7 @@ namespace APIWebManagement.Services.Implements
                             UserName = u.UserName,
                             Gender = u.Gender,
                             IsActive = u.IsActive,
+                            Email = u.Email,
                             DateOfBirth = u.DateOfBirth,
                             CreatedDate = u.CreatedDate,
                             UpdatedDate = u.UpdatedDate,
@@ -102,6 +104,7 @@ namespace APIWebManagement.Services.Implements
                 UserID = user.Id,
                 UserName = user.UserName,
                 Gender = user.Gender,
+                Email = user.Email,
                 IsActive = user.IsActive,
                 DateOfBirth = user.DateOfBirth,
                 CreatedDate = user.CreatedDate,
@@ -116,13 +119,13 @@ namespace APIWebManagement.Services.Implements
             if (userUpdate == null)
                 throw new WebManagementException("Can not find User");
 
-            userUpdate.UserName = userUpdateRequest.UserName;
-            userUpdate.Gender = userUpdateRequest.Gender;
+            userUpdate.UserName = userUpdateRequest.UserName.Trim();
+            userUpdate.Gender = userUpdateRequest.Gender.Trim();
+            userUpdate.Email = userUpdateRequest.Email.Trim();
+            userUpdate.NormalizedEmail = userUpdateRequest.Email.ToUpper().Trim();
             userUpdate.IsActive = userUpdateRequest.IsActive;
             userUpdate.DateOfBirth = userUpdateRequest.DateOfBirth;
             userUpdate.UpdatedDate = DateTime.Now;
-
-
 
             return await _dataContext.SaveChangesAsync();
         }

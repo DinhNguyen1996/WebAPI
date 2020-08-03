@@ -20,5 +20,6 @@ namespace APIWebManagement.ViewModels.User
         public bool IsActive { get; set; }
         [Required(ErrorMessage = "DateOfBirth is required")]
         public DateTime DateOfBirth { get; set; }
+        public string Email { get; set; }
     }
 }
