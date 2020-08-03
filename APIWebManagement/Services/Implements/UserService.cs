@@ -167,8 +167,6 @@ namespace APIWebManagement.Services.Implements
         public async Task<List<string>> EditRoleUser(string userName, UserEditRoleRequest request)
         {
             var user = await _userManager.FindByNameAsync(userName);
-            if (user == null)
-                throw new WebManagementException("Can not find User");
 
             var userRoles = await _userManager.GetRolesAsync(user);
 
