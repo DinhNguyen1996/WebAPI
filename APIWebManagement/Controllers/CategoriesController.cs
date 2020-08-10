@@ -1,6 +1,7 @@
 ﻿using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Category;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -18,6 +19,7 @@ namespace APIWebManagement.Controllers
             _categoryService = categoryService;
         }
         // GET: api/<ProductsController>
+        [Authorize(Policy = "MemberRole")]
         [HttpGet]
         public async Task<IActionResult> GetAllCategory([FromQuery] GetCategoriesPagingRequest request)
         {
@@ -27,6 +29,7 @@ namespace APIWebManagement.Controllers
         }
 
         // GET api/<ProductsController>/5
+        [Authorize(Policy = "MemberRole")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -38,6 +41,7 @@ namespace APIWebManagement.Controllers
         }
 
         // POST api/<ProductsController>
+        [Authorize(Policy = "MemberRole")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CategoryCreateRequest categoryCreateRequest)
         {
@@ -51,6 +55,7 @@ namespace APIWebManagement.Controllers
         }
 
         // PUT api/<ProductsController>/5
+        [Authorize(Policy = "MemberRole")]
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] CategoryUpdateRequest categoryUpdateRequest)
         {
@@ -62,6 +67,7 @@ namespace APIWebManagement.Controllers
         }
 
         // DELETE api/<ProductsController>/5
+        [Authorize(Policy = "MemberRole")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

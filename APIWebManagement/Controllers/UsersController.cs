@@ -107,9 +107,8 @@ namespace APIWebManagement.Controllers
             return Ok(userRole);
         }
 
-
         [HttpPost("EditRoles/{userName}")]
-        public async Task<IActionResult> GetRoleUser(string userName, UserEditRoleRequest request)
+        public async Task<IActionResult> EditRoleUser(string userName, UserEditRoleRequest request)
         {
             var result = await _userService.EditRoleUser(userName, request);
             return Ok(new { Message = "Updated Role User successfully", RoleName = result });

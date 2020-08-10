@@ -177,12 +177,12 @@ namespace APIWebManagement.Services.Implements
             var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
 
             if (!result.Succeeded)
-                throw new WebManagementException(result.Errors.ToString());
+                throw new WebManagementException(Helpers.ConvertListErrorString(result.Errors.ToList()));
 
             result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
 
             if (!result.Succeeded)
-                throw new WebManagementException(result.Errors.ToString());
+                throw new WebManagementException(Helpers.ConvertListErrorString(result.Errors.ToList()));
 
             var lstRoles = new List<string>(await _userManager.GetRolesAsync(user));
 

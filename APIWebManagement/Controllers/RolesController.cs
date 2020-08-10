@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Role;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -21,6 +22,7 @@ namespace APIWebManagement.Controllers
             _roleService = roleService;
         }
         // GET: api/<RolesController>
+        [Authorize(Policy = "MemberRole")]
         [HttpGet]
         public IActionResult GetAllRole()
         {
@@ -35,6 +37,7 @@ namespace APIWebManagement.Controllers
         }
 
         // GET api/<RolesController>/5
+        [Authorize(Policy = "MemberRole")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -46,6 +49,7 @@ namespace APIWebManagement.Controllers
         }
 
         // POST api/<RolesController>
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpPost]
         public async Task<IActionResult> CreateRole([FromBody] RequestCreateRole request)
         {
@@ -59,6 +63,7 @@ namespace APIWebManagement.Controllers
         }
 
         //PUT api/<RolesController>/5
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpPut]
         public async Task<IActionResult> UpdatedRole(RoleUpdateRequest request)
         {
@@ -71,6 +76,7 @@ namespace APIWebManagement.Controllers
 
         // DELETE api/<RolesController>/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> DeleteRole(int id)
         {
             var result = await _roleService.DeleteRole(id);
