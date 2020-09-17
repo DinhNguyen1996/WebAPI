@@ -93,6 +93,7 @@ namespace APIWebManagement.Services.Implements
             if (productUpdate == null)
                 throw new WebManagementException("Can not find product to update");
 
+            _dataContext.Products.Attach(productUpdate);
             productUpdate.Name = productUpdateRequest.Name;
             productUpdate.SalePrice = productUpdateRequest.SalePrice;
             productUpdate.OriginalPrice = productUpdateRequest.OriginalPrice;

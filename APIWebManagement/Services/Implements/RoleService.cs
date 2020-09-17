@@ -84,6 +84,7 @@ namespace APIWebManagement.Services.Implements
             if (roleUpdate == null)
                 throw new WebManagementException("Can not find role");
 
+            _dataContext.Roles.Attach(roleUpdate);
             roleUpdate.Name = request.Name;
             roleUpdate.NormalizedName = request.Name.ToUpper();
 

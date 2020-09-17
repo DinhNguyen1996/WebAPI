@@ -2,6 +2,7 @@
 using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -46,6 +47,7 @@ namespace APIWebManagement.Controllers
         }
 
         // POST api/<UsersController>
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] UserCreateRequest userCreateRequest)
         {

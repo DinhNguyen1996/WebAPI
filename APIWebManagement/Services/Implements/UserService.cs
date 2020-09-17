@@ -119,6 +119,7 @@ namespace APIWebManagement.Services.Implements
             if (userUpdate == null)
                 throw new WebManagementException("Can not find User");
 
+            _dataContext.Users.Attach(userUpdate);
             userUpdate.UserName = userUpdateRequest.UserName.Trim();
             userUpdate.Gender = userUpdateRequest.Gender.Trim();
             userUpdate.Email = userUpdateRequest.Email.Trim();

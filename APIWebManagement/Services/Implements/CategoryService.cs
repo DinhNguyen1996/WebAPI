@@ -47,14 +47,19 @@ namespace APIWebManagement.Services.Implements
 
             var category = await _dataContext.Categories.FindAsync(id);
 
-            var categoryView = new CategoryViewModel
+            if(category != null)
             {
-                CategoryID = category.CategoryID,
-                Name = category.Name
-            };
+                var categoryView = new CategoryViewModel
+                {
+                    CategoryID = category.CategoryID,
+                    Name = category.Name
+                };
 
-            return categoryView;
+                return categoryView;
+            }
+            return null;
         }
+
         public async Task<int> CreateCategory(CategoryCreateRequest categoryCreateRequest)
         {
             if (categoryCreateRequest == null) throw new WebManagementException("Can not create Category");
@@ -76,6 +81,7 @@ namespace APIWebManagement.Services.Implements
             if (categoryUpdate == null)
                 throw new WebManagementException("Can not find category to update");
 
+            _dataContext.Categories.Attach(categoryUpdate);
             categoryUpdate.Name = categoryUpdateRequest.Name;
 
             return await _dataContext.SaveChangesAsync();
