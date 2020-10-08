@@ -1,6 +1,7 @@
 ﻿using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Category;
+using APIWebManagement.ViewModels.Sesstion;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -19,10 +20,10 @@ namespace APIWebManagement.Controllers
             _categoryService = categoryService;
         }
         // GET: api/<ProductsController>
-        [Authorize(Policy = "MemberRole")]
         [HttpGet]
         public async Task<IActionResult> GetAllCategory([FromQuery] GetCategoriesPagingRequest request)
         {
+            var user = SessionHelper.GetObjectFromJson<SesstionWeb>(HttpContext.Session, "SesstionLogin");
             var lstCategories = await _categoryService.GetAllCategory(request);
 
             return Ok(lstCategories);

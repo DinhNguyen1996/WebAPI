@@ -2,6 +2,7 @@
 using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Login;
+using APIWebManagement.ViewModels.Sesstion;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace APIWebManagement.Controllers
     {
         private readonly IAuthService _authService;
         private readonly UserManager<User> _userManager;
+        //private readonly HttpContext httpContext;
 
         public AuthsController(IAuthService authService, UserManager<User> userManager)
         {
@@ -29,9 +31,26 @@ namespace APIWebManagement.Controllers
         {
             var result = await _authService.Login(request);
             if (result != null)
+            {
+                var sesstionLogin = new SesstionWeb
+                {
+                    UserID = result.User.UserID,
+                    UserName = result.User.UserName
+                };
+                SessionHelper.SetObjectAsJson(HttpContext.Session, "SesstionLogin", sesstionLogin);
                 return Ok(result);
+            }
 
             return BadRequest();
+        }
+
+        [HttpPost("Logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("SesstionLogin");
+            //HttpContext.Session.Clear();
+            //HttpContext.SignOutAsync();
+            return Ok("Thoát thành công");
         }
 
         [HttpPost("ForgotPassword")]
