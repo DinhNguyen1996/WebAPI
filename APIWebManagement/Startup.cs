@@ -2,6 +2,7 @@ using APIWebManagement.Data.Entities;
 using APIWebManagement.Services.Implements;
 using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
+using EmailService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -59,6 +60,7 @@ namespace APIWebManagement
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
@@ -76,6 +78,12 @@ namespace APIWebManagement
                 options.AddPolicy("MemberRole", policy => policy.RequireRole("Member"));
                 options.AddPolicy("LuxuryRole", policy => policy.RequireRole("Luxury"));
             });
+
+            var emailConfig = Configuration.GetSection("EmailConfiguration")
+                .Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
+
+            services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddControllers(options =>
             {

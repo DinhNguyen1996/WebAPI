@@ -3,6 +3,8 @@ using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Category;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -19,10 +21,10 @@ namespace APIWebManagement.Controllers
             _categoryService = categoryService;
         }
         // GET: api/<ProductsController>
-        [Authorize(Policy = "MemberRole")]
         [HttpGet]
         public async Task<IActionResult> GetAllCategory([FromQuery] GetCategoriesPagingRequest request)
         {
+            //string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
             var lstCategories = await _categoryService.GetAllCategory(request);
 
             return Ok(lstCategories);
