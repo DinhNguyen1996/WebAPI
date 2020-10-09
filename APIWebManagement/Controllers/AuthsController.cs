@@ -1,5 +1,6 @@
 ﻿using APIWebManagement.Data.Entities;
 using APIWebManagement.Services.Interfaces;
+using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Login;
 using APIWebManagement.ViewModels.Sesstion;
 using EmailService;
@@ -63,7 +64,7 @@ namespace APIWebManagement.Controllers
                 throw new WebManagementException("Can not find user");
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
+            return Ok();
         }
 
         [HttpGet("SendEmail")]
