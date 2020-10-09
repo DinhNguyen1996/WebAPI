@@ -1,8 +1,8 @@
 ﻿using APIWebManagement.Data.Entities;
 using APIWebManagement.Services.Interfaces;
-using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Login;
 using APIWebManagement.ViewModels.Sesstion;
+using EmailService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -17,12 +17,13 @@ namespace APIWebManagement.Controllers
     {
         private readonly IAuthService _authService;
         private readonly UserManager<User> _userManager;
-        //private readonly HttpContext httpContext;
+        private readonly IEmailSender _emailSender;
 
-        public AuthsController(IAuthService authService, UserManager<User> userManager)
+        public AuthsController(IAuthService authService, UserManager<User> userManager, IEmailSender emailSender)
         {
             _authService = authService;
             _userManager = userManager;
+            _emailSender = emailSender;
         }
 
         // POST api/<AuthsController>
@@ -56,12 +57,21 @@ namespace APIWebManagement.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
         {
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
                 throw new WebManagementException("Can not find user");
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
+        }
+
+        [HttpGet("SendEmail")]
+        public IActionResult SendEmail()
+        {
+
+            var message = new Message(new string[] { "thanhdinhbmt123@gmail.com" }, "Test email", "This is the content from our email");
+            _emailSender.SendEmail(message);
             return Ok();
         }
 
