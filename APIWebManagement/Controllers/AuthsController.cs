@@ -2,6 +2,7 @@
 using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
 using APIWebManagement.ViewModels.Login;
+using APIWebManagement.ViewModels.Sesstion;
 using EmailService;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -34,9 +35,38 @@ namespace APIWebManagement.Controllers
         {
             var result = await _authService.Login(request);
             if (result != null)
+            {
+                var sesstionLogin = new SesstionWeb
+                {
+                    UserID = result.User.UserID,
+                    UserName = result.User.UserName
+                };
+                SessionHelper.SetObjectAsJson(HttpContext.Session, "SesstionLogin", sesstionLogin);
                 return Ok(result);
+            }
 
             return BadRequest();
+        }
+
+        [HttpPost("Logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("SesstionLogin");
+            //HttpContext.Session.Clear();
+            //HttpContext.SignOutAsync();
+            return Ok("Thoát thành công");
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
+        {
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                throw new WebManagementException("Can not find user");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            return Ok();
         }
 
         [HttpGet("SendEmail")]
