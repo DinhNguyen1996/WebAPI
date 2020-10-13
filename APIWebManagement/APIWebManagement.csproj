@@ -25,5 +25,9 @@
     <ProjectReference Include="..\EmailService\EmailService.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Template\Email\" />
+  </ItemGroup>
+
 
 </Project>
