@@ -2,7 +2,6 @@ using APIWebManagement.Data.Entities;
 using APIWebManagement.Services.Implements;
 using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
-using EmailService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -85,15 +84,9 @@ namespace APIWebManagement
             services.AddSession(options =>
             {
                 options.Cookie.Name = ".AdventureWorks.Session";
-                options.IdleTimeout = TimeSpan.FromMinutes(1);
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
                 options.Cookie.IsEssential = true;
             });
-
-            var emailConfig = Configuration.GetSection("EmailConfiguration")
-                .Get<EmailConfiguration>();
-            services.AddSingleton(emailConfig);
-
-            services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddControllers(options =>
             {
