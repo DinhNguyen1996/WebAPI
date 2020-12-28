@@ -30,7 +30,7 @@ namespace APIWebManagement.Services.Implements
             if (userCreateRequest == null)
                 throw new WebManagementException("Can not create User");
 
-            var isUserExist = await _dataContext.Users.AnyAsync(x => x.UserName == userCreateRequest.UserName);
+            var isUserExist = await _dataContext.Users.AnyAsync(x => x.UserName.Trim().ToLower() == userCreateRequest.UserName.Trim().ToLower());
             if (isUserExist) throw new WebManagementException("Username is exist in database");
 
             var newUser = new User
@@ -39,6 +39,7 @@ namespace APIWebManagement.Services.Implements
                 PasswordHash = userCreateRequest.Password,
                 Gender = userCreateRequest.Gender,
                 Email = userCreateRequest.Email,
+                NormalizedEmail = userCreateRequest.Email.ToUpper(),
                 IsActive = true,
                 DateOfBirth = userCreateRequest.DateOfBirth,
                 CreatedDate = DateTime.Now
@@ -122,8 +123,8 @@ namespace APIWebManagement.Services.Implements
             _dataContext.Users.Attach(userUpdate);
             userUpdate.UserName = userUpdateRequest.UserName.Trim();
             userUpdate.Gender = userUpdateRequest.Gender.Trim();
-            userUpdate.Email = userUpdateRequest.Email.Trim();
-            userUpdate.NormalizedEmail = userUpdateRequest.Email.ToUpper().Trim();
+            //userUpdate.Email = userUpdateRequest.Email.Trim();
+            //userUpdate.NormalizedEmail = userUpdateRequest.Email.ToUpper().Trim();
             userUpdate.IsActive = userUpdateRequest.IsActive;
             userUpdate.DateOfBirth = userUpdateRequest.DateOfBirth;
             userUpdate.UpdatedDate = DateTime.Now;

@@ -30,7 +30,7 @@ namespace APIWebManagement.Controllers
 
         // POST api/<AuthsController>
         [HttpPost("Login")]
-        public async Task<IActionResult> Post([FromBody] UserForLoginRequest request)
+        public async Task<IActionResult> Login([FromBody] UserForLoginRequest request)
         {
             var result = await _authService.Login(request);
             if (result != null)

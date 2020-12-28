@@ -12,13 +12,13 @@ namespace APIWebManagement.Utilities
     {
         static bool MailServerEnable = true;
         static string MailServerHost = "webmail.lacviet.com.vn";
-        static int MailServerPort = 25;
+        static int MailServerPort = 587;
         static bool MailServerSsl = true;
         static string MailAccount = "noreply@lacviet.com.vn";
         static string MailAccountPass = "1s@1212";
         static string MailAccountAddess = "noreply@lacviet.com.vn";
 
-        public static void SendEmail(this HttpContext httpContext, string EmailTo = null, string SubjectContent = null, string BodyContent = null, string ProductName = "")
+        public static void SendEmail(this HttpContext httpContext, string EmailTo, string SubjectContent = null, string BodyContent = null, string ProductName = "")
         {
             if (!MailServerEnable)
                 return;
@@ -46,7 +46,6 @@ namespace APIWebManagement.Utilities
                     MailServerSsl
                 );
                 client.Authenticate(MailAccount, MailAccountPass);
-                //client.EnableSsl = MailServerSsl;
 
                 client.Send(message);
                 client.Disconnect(true);
@@ -54,7 +53,7 @@ namespace APIWebManagement.Utilities
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi", ex);
+                throw new Exception("Lỗi" + ex.Message, ex);
             }
         }
 
