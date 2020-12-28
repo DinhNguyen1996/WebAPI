@@ -36,7 +36,7 @@ namespace APIWebManagement.Services.Implements
             if (request == null)
                 throw new WebManagementException("Can not create role");
 
-            var roleExist = await _dataContext.Roles.FirstOrDefaultAsync(x => x.Name == request.Name);
+            var roleExist = await _dataContext.Roles.FirstOrDefaultAsync(x => x.Name.Trim().ToLower() == request.Name.Trim().ToLower());
             if (roleExist != null)
                 throw new WebManagementException("RoleName is exist in database");
 

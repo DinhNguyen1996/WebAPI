@@ -1,12 +1,14 @@
 ﻿using APIWebManagement.Data.Entities;
 using APIWebManagement.Services.Interfaces;
 using APIWebManagement.Utilities;
+using APIWebManagement.ViewModels.Email;
 using APIWebManagement.ViewModels.Login;
 using APIWebManagement.ViewModels.Sesstion;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -69,25 +71,39 @@ namespace APIWebManagement.Controllers
         }
 
         [HttpGet("SendEmail")]
-        public IActionResult SendEmail()
+        public IActionResult SendEmail([FromBody] Email model)
         {
             try
             {
-                string rootPath = _hostingEnvironment.ContentRootPath;
-                string BodyTemplate = WebTemplateHelper.GetTemplateContent(rootPath, "Email/ActiveAccount.html");
-                //replace
-                //var logo = _configuration["AppSettings:WebApi"] + "/Upload/Default/logo.png";
-                HttpContext.SendEmail(
-                          EmailTo: "thanhdinhbmt123@gmail.com",
-                          SubjectContent: "Kích hoạt tài khoản",
-                          BodyContent: BodyTemplate
-                        );
+                //string rootPath = _hostingEnvironment.ContentRootPath;
+                //string BodyTemplate = WebTemplateHelper.GetTemplateContent(rootPath, "Email/ActiveAccount.html");
+                ////replace
+                ////var logo = _configuration["AppSettings:WebApi"] + "/Upload/Default/logo.png";
+                //HttpContext.SendEmail(
+                //          EmailTo: "thanhdinhbmt123@gmail.com",
+                //          SubjectContent: "Kích hoạt tài khoản",
+                //          BodyContent: BodyTemplate
+                //        );
+                MailMessage mm = new MailMessage();
+                mm.To.Add(model.To);
+                mm.Subject = model.Subject;
+                mm.Body = model.Body;
+                mm.From = new MailAddress("admin@gmail.com");
+                mm.IsBodyHtml = false;
+
+                SmtpClient smtp = new SmtpClient("smtp.googlemail.com");
+                smtp.Port = 587;
+                smtp.UseDefaultCredentials = false;
+                smtp.EnableSsl = true;
+                smtp.Credentials = new System.Net.NetworkCredential("admin@gmail.com", "password");
+                smtp.TargetName = "STARTTLS/smtp.gmail.com";
+                smtp.Send(mm);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                throw new WebManagementException("Lỗi", ex);
+                throw new WebManagementException("Lỗi không gởi được Email", ex);
             }
 
         }
