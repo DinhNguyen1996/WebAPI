@@ -36,6 +36,9 @@ namespace APIWebManagement.Services.Implements
         {
             var user = await _userManager.FindByNameAsync(request.UserName);
 
+            if (user == null)
+                throw new WebManagementException("Can not find user");
+
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
             if (result.Succeeded)
@@ -47,8 +50,7 @@ namespace APIWebManagement.Services.Implements
                     Gender = user.Gender,
                     IsActive = user.IsActive,
                     DateOfBirth = user.DateOfBirth,
-                    CreatedDate = user.CreatedDate,
-                    UpdatedDate = user.UpdatedDate
+                    Email = user.Email
                 };
 
                 return new UserResponseLogin { Token = GenerateJWTToken(user).Result, User = userLogin };

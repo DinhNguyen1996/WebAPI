@@ -35,7 +35,7 @@ namespace APIWebManagement.Controllers
         public async Task<IActionResult> Login([FromBody] UserForLoginRequest request)
         {
             var result = await _authService.Login(request);
-            if (result != null)
+            if (result.Token != null && result.User != null)
             {
                 var sesstionLogin = new SesstionWeb
                 {
@@ -55,7 +55,7 @@ namespace APIWebManagement.Controllers
             HttpContext.Session.Remove("SesstionLogin");
             //HttpContext.Session.Clear();
             //HttpContext.SignOutAsync();
-            return Ok("Thoát thành công");
+            return Ok(new { mess = "Thoát thành công" });
         }
 
         [HttpPost("ForgotPassword")]

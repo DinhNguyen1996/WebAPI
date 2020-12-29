@@ -1,0 +1,96 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<style>
+    .card-signin {
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
+    }
+
+        .card-signin .card-title {
+            margin-bottom: 2rem;
+            font-weight: 300;
+            font-size: 1.5rem;
+        }
+
+        .card-signin .card-body {
+            padding: 2rem;
+        }
+
+    .form-signin {
+        width: 100%;
+    }
+
+        .form-signin .btn {
+            font-size: 80%;
+            border-radius: 5rem;
+            letter-spacing: .1rem;
+            font-weight: bold;
+            padding: 1rem;
+            transition: all 0.2s;
+        }
+
+    .form-group {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5">
+                <div class="card-body">
+                    <h5 class="card-title text-center">ĐĂNG NHẬP</h5>
+                    <form class="form-signin" method="post">
+                        <div class="form-group">
+                            <input id="userName" class="form-control" placeholder="UserName" required autofocus>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                        </div>
+
+                        <button onclick="login()" class="btn btn-lg btn-primary btn-block text-uppercase" type="button">Sign in</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function login() {
+        var input_userName = $("#userName").val();
+        var input_password = $("#inputPassword").val();
+        if (input_userName == "" || input_password == "") {
+            toastr.error("Lỗi", "Tên đăng nhập và password không được để trống!");
+            return;
+        }
+        var request = { userName: input_userName, password: input_password };
+        var data = JSON.stringify(request);
+      
+        $.ajax({
+            url: "http://localhost:64720/api/Auths/login",
+            type: 'POST',
+            dataType: 'JSON',
+            contentType: 'application/json',
+            data: data,
+            success: function (result) {
+                if (result.token != "" && result.user != null) {
+                    toastr.success('Thành công', 'Đăng nhập thành công!');
+                    localStorage.setItem("Token", result.token);
+                    localStorage.setItem("User", JSON.stringify(result.user));
+                    window.location.href = webURL + "Home/InfoUser";
+                } else {
+                    toastr.error("Lỗi", 'Đăng nhập thất bại.');
+                }
+            },
+            error: function (response, object, message) {
+                toastr.error("Lỗi", 'Đăng nhập thất bại.');
+            }
+        });
+    }
+
+</script>
